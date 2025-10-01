@@ -17,7 +17,11 @@ def load_stopwords():
 
     stopwords = set()
 
-    # fill this in
+    with open(STOPWORDS_PATH, "r", encoding="utf-8") as f:
+        text = f.read().lower()
+        text = re.sub(r"[^a-z\s]", " ", text)
+        text = re.sub(r"\s+", " ", text)
+        stopwords = set(text.split())
 
     return stopwords
 
@@ -27,7 +31,18 @@ def load_shakespeare_lines():
 
     shakespeare_lines = []
 
-    # fill this in
+    with open(SHAKESPEARE_PATH, "r", encoding="utf-8") as f:
+        lines = f.readlines()
+
+    for line in lines[NUM_LINES_TO_SKIP:]:
+        if line.startswith(LAST_LINE_START):
+            break
+        line = line.strip()
+        if not line:
+            continue
+        if line.startswith("<<") and line.endswith(">>"):
+            continue
+        shakespeare_lines.append(line)
 
     return shakespeare_lines
 
@@ -35,7 +50,10 @@ def load_shakespeare_lines():
 def get_shakespeare_words(shakespeare_lines):
     """Takes the lines and makes a list of lowercase words."""
 
-    # fill this in
+    text = " ".join(shakespeare_lines).lower()
+    text = re.sub(r"[^a-z\s]", " ", text)   
+    text = re.sub(r"\s+", " ", text)        
+    words = text.strip().split()
 
     return words
 
@@ -46,7 +64,9 @@ def count_words(words, stopwords):
 
     word_counts = dict()
 
-    # fill this in
+    for word in words:
+        if word and word not in stopwords:
+            word_counts[word] = word_counts.get(word, 0) + 1
 
     return word_counts
 
@@ -55,7 +75,7 @@ def sort_word_counts(word_counts):
     """Takes a dictionary or word counts.
     Returns a list of (word, count) tuples that are sorted by count in descending order."""
 
-    # fill this in
+    sorted_word_counts = sorted(word_counts.items(), key=lambda x: x[1], reverse=True)
 
     return sorted_word_counts
 
@@ -63,7 +83,10 @@ def sort_word_counts(word_counts):
 def write_word_counts(sorted_word_counts, path):
     """Takes a list of (word, count) tuples and writes them to a CSV."""
 
-       # fill this in
+    with open(path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow(["word", "count"])
+        writer.writerows(sorted_word_counts)
 
 
 if __name__ == "__main__":
